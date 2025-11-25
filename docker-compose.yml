@@ -51,8 +51,6 @@ services:
       - backend
     networks:
       - snc-network
-    environment:
-      - VITE_API_URL=http://localhost:5000/api
 
 networks:
   snc-network:
