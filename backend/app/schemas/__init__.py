@@ -1,27 +1,23 @@
 # Schemas module
 # 从父级的 schemas.py 导入所有类
 
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Annotated
 from datetime import datetime
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, BeforeValidator
 from bson import ObjectId
 
 
-class PyObjectId(ObjectId):
-    """自定义ObjectId用于Pydantic"""
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
+# Pydantic v2 兼容的 ObjectId 处理
+def validate_object_id(v: Any) -> str:
+    """验证并转换 ObjectId 为字符串"""
+    if isinstance(v, ObjectId):
+        return str(v)
+    if isinstance(v, str) and ObjectId.is_valid(v):
+        return v
+    raise ValueError("Invalid ObjectId")
 
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid objectid")
-        return ObjectId(v)
 
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
+PyObjectId = Annotated[str, BeforeValidator(validate_object_id)]
 
 
 # Blog Schemas
