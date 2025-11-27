@@ -11,6 +11,7 @@ from ..middleware.auth import get_current_user
 router = APIRouter()
 
 
+@router.get("", response_model=List[ServiceResponse])
 @router.get("/", response_model=List[ServiceResponse])
 async def get_services(
     category: Optional[str] = Query(None),
@@ -57,6 +58,7 @@ async def get_service(service_id: str):
     return service
 
 
+@router.post("", response_model=dict, status_code=status.HTTP_201_CREATED)
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_service(service: ServiceCreate, current_user: dict = Depends(get_current_user)):
     """创建服务（需要管理员权限）"""

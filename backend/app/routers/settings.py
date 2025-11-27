@@ -11,6 +11,7 @@ from ..middleware.auth import get_current_user
 router = APIRouter()
 
 
+@router.get("", response_model=Dict[str, Any])
 @router.get("/", response_model=Dict[str, Any])
 async def get_all_settings():
     """获取所有设置（公开接口）"""
@@ -41,6 +42,7 @@ async def get_setting(key: str):
     return {"key": setting["key"], "value": setting["value"]}
 
 
+@router.post("", response_model=dict)
 @router.post("/", response_model=dict)
 async def create_or_update_setting(
     setting: SettingsCreate,

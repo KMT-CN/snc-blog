@@ -11,6 +11,7 @@ from ..middleware.auth import get_current_user
 router = APIRouter()
 
 
+@router.get("", response_model=List[BlogResponse])
 @router.get("/", response_model=List[BlogResponse])
 async def get_blogs(
     category: Optional[str] = Query(None),
@@ -68,6 +69,7 @@ async def get_blog(blog_id: str):
     return blog
 
 
+@router.post("", response_model=dict, status_code=status.HTTP_201_CREATED)
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_blog(blog: BlogCreate, current_user: dict = Depends(get_current_user)):
     """创建文章（需要管理员权限）"""

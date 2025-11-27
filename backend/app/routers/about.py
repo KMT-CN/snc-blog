@@ -7,6 +7,7 @@ from ..middleware.auth import get_current_user
 router = APIRouter()
 
 
+@router.get("", response_model=Dict[str, Any])
 @router.get("/", response_model=Dict[str, Any])
 async def get_about():
     """获取关于我们页面数据（公开接口）"""
@@ -30,6 +31,7 @@ async def get_about():
     return about
 
 
+@router.put("", response_model=Dict[str, Any])
 @router.put("/", response_model=Dict[str, Any])
 async def update_about(
     about_data: Dict[str, Any],

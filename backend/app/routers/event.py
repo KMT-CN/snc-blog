@@ -11,6 +11,7 @@ from ..middleware.auth import get_current_user
 router = APIRouter()
 
 
+@router.get("", response_model=List[EventResponse])
 @router.get("/", response_model=List[EventResponse])
 async def get_events(
     category: Optional[str] = Query(None),
@@ -61,6 +62,7 @@ async def get_event(event_id: str):
     return event
 
 
+@router.post("", response_model=dict, status_code=status.HTTP_201_CREATED)
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_event(event: EventCreate, current_user: dict = Depends(get_current_user)):
     """创建活动（需要管理员权限）"""

@@ -1,7 +1,6 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.base import BaseHTTPMiddleware
 from datetime import datetime
 import os
 
@@ -10,30 +9,19 @@ from .core.database import connect_to_mongo, close_mongo_connection
 from .routers import auth, blog, service, event, settings as settings_router, about
 
 
-class ProxyHeadersMiddleware(BaseHTTPMiddleware):
-    """处理反向代理头，确保重定向使用正确的协议"""
-    async def dispatch(self, request: Request, call_next):
-        # 如果有 X-Forwarded-Proto 头，更新 scope
-        forwarded_proto = request.headers.get("x-forwarded-proto")
-        if forwarded_proto:
-            request.scope["scheme"] = forwarded_proto
-        return await call_next(request)
-
-
 # 创建 FastAPI 应用
+# redirect_slashes=False: 禁用自动斜杠重定向，避免重定向时协议问题
 app = FastAPI(
     title="SNC Blog API",
     description="Backend API for SNC Blog",
-    version="2.0.0"
+    version="2.0.0",
+    redirect_slashes=False
 )
-
-# 添加代理头处理中间件（需要在 CORS 之前）
-app.add_middleware(ProxyHeadersMiddleware)
 
 # CORS 配置
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.client_url, "http://localhost:3000", "https://snc.319.molirain.com"],
+    allow_origins=["*"],  # 允许所有来源，简化配置
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
