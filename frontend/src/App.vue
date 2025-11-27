@@ -2,10 +2,12 @@
 import { RouterView } from 'vue-router'
 import Navigation from './components/Navigation.vue'
 import Footer from './components/Footer.vue'
+import ParticleBackground from './components/ParticleBackground.vue'
 </script>
 
 <template>
   <div id="app">
+    <ParticleBackground />
     <Navigation />
     <main>
       <RouterView v-slot="{ Component }">
