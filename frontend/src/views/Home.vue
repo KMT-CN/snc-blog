@@ -195,7 +195,19 @@ const scrollToContent = () => {
   background-position: center;
   background-repeat: no-repeat;
   /* 如果图片未加载，显示渐变色背景 */
-  background-color: #99FFFF;
+  background-color: var(--primary-dark);
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4); /* 半透明遮罩，提升文字可读性 */
+  backdrop-filter: blur(4px); /* 模糊滤镜 */
+  z-index: 0;
 }
 
 .hero-background {
@@ -236,6 +248,7 @@ const scrollToContent = () => {
   margin-bottom: 48px;
   opacity: 0.95;
   font-weight: 300;
+  color:var(--bg-primary);
 }
 
 .hero-actions {
@@ -286,7 +299,7 @@ const scrollToContent = () => {
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 32px;
 }
 
@@ -328,8 +341,8 @@ const scrollToContent = () => {
 /* Stats Section */
 .stats-section {
   padding: 60px 0;
-  background: linear-gradient(135deg, #99FFFF 0%, #66CCCC 100%);
-  color: #004d4d;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  color: var(--text-primary);
 }
 
 .stats-grid {

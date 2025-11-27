@@ -239,8 +239,8 @@ onMounted(async () => {
 /* Hero Section */
 .hero-section {
   padding: 100px 0 80px;
-  background: linear-gradient(135deg, #99FFFF 0%, #66CCCC 100%);
-  color: #004d4d;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+  color: var(--bg-primary);
   text-align: center;
 }
 
@@ -253,6 +253,7 @@ onMounted(async () => {
   font-size: 1.3rem;
   line-height: 1.8;
   opacity: 0.95;
+  color: var(--bg-primary);
 }
 
 /* Stats Section */
@@ -360,7 +361,7 @@ onMounted(async () => {
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 32px;
 }
 

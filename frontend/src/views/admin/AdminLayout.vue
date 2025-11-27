@@ -73,7 +73,7 @@ const logout = () => {
 
 .sidebar {
   width: 250px;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
   color: white;
   padding: 2rem 0;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);

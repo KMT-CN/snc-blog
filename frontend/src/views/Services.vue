@@ -223,8 +223,8 @@ const groupedServices = computed(() => {
 .page-header {
   padding: 80px 0 60px;
   text-align: center;
-  background: linear-gradient(135deg, #99FFFF 0%, #66CCCC 100%);
-  color: #004d4d;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+  color: var(--bg-primary);
 }
 
 .page-title {
@@ -235,6 +235,7 @@ const groupedServices = computed(() => {
 .page-subtitle {
   font-size: 1.2rem;
   opacity: 0.9;
+  color: var(--bg-primary);
 }
 
 /* Category Section */

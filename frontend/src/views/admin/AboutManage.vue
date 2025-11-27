@@ -310,11 +310,11 @@ h1 {
 }
 
 .tab:hover {
-  border-color: #06b6d4;
+  border-color: var(--primary-color);
 }
 
 .tab.active {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
   color: white;
   border-color: transparent;
 }
@@ -343,8 +343,8 @@ h1 {
 
 .btn-add {
   padding: 0.5rem 1rem;
-  background: #e0f2fe;
-  color: #0891b2;
+  background: #f5f5f5;
+  color: var(--primary-color);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -352,7 +352,7 @@ h1 {
 }
 
 .btn-add:hover {
-  background: #bae6fd;
+  background: #e0e0e0;
 }
 
 .items-list {
@@ -512,7 +512,7 @@ h1 {
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #06b6d4;
+  border-color: var(--primary-color);
 }
 
 .form-row {
@@ -530,7 +530,7 @@ h1 {
 
 .btn-primary {
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
   color: white;
   border: none;
   border-radius: 8px;

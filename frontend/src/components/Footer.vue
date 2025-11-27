@@ -188,7 +188,7 @@ onMounted(() => {
 
 .footer-wave {
   position: absolute;
-  top: -1px;
+  top: -15px;
   left: 0;
   width: 100%;
   overflow: hidden;
@@ -206,7 +206,7 @@ onMounted(() => {
 
 .footer-wave .parallax > use {
   animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
-  fill: rgba(255, 255, 255, 0.7);
+  fill: rgba(255, 255, 255, 0.5);
 }
 
 .footer-wave .parallax > use:nth-child(1) {
@@ -239,7 +239,7 @@ onMounted(() => {
 }
 
 .footer-content {
-  padding: 80px 0 40px;
+  padding: 120px 0 40px;
 }
 
 .footer-grid {

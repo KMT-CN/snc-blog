@@ -167,7 +167,7 @@ const statusText = (status: string) => {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -266,8 +266,8 @@ const statusText = (status: string) => {
 }
 
 .category {
-  background: #e0f2fe;
-  color: #0891b2;
+  background: #f5f5f5;
+  color: var(--primary-color);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
 }
@@ -330,13 +330,13 @@ const statusText = (status: string) => {
 }
 
 .btn-edit {
-  background: #e0f2fe;
-  color: #0891b2;
+  background: #f5f5f5;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
 .btn-edit:hover {
-  background: #bae6fd;
+  background: #e0e0e0;
 }
 
 .btn-delete {

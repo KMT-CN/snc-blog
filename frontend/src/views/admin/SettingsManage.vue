@@ -276,7 +276,7 @@ h1 {
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #06b6d4;
+  border-color: var(--primary-color);
 }
 
 .actions {
@@ -296,7 +296,7 @@ h1 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
   color: white;
 }
 
