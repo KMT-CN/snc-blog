@@ -88,6 +88,16 @@ const timeline = ref<TimelineItem[]>(defaultTimeline)
 const values = ref<ValueItem[]>(defaultValues)
 const stats = ref<StatItem[]>(defaultStats)
 const mission = ref({ title: '', content: '' })
+const contact = ref({
+  email: 'contact@snc.edu.cn',
+  github: '',
+  wechat: '',
+  qq: '',
+  formUrl: ''
+})
+
+// 二维码弹窗状态
+const showQrModal = ref(false)
 
 onMounted(async () => {
   try {
@@ -99,6 +109,7 @@ onMounted(async () => {
       if (data.values?.length) values.value = data.values
       if (data.stats?.length) stats.value = data.stats
       if (data.mission) mission.value = data.mission
+      if (data.contact) contact.value = { ...contact.value, ...data.contact }
     }
   } catch (error) {
     console.error('加载关于我们数据失败:', error)
@@ -212,26 +223,51 @@ onMounted(async () => {
           <h2>加入我们</h2>
           <p>如果你热爱技术，愿意分享和学习，欢迎加入我们的团队！</p>
           <div class="join-ways">
-            <div class="join-way">
+            <a :href="'mailto:' + contact.email" class="join-way clickable">
               <div class="join-icon">📧</div>
               <h4>发送邮件</h4>
-              <p>contact@snc.edu.cn</p>
-            </div>
-            <div class="join-way">
+              <p>{{ contact.email }}</p>
+            </a>
+            <div class="join-way clickable" @click="showQrModal = true">
               <div class="join-icon">💬</div>
               <h4>加入群组</h4>
-              <p>扫码加入我们的交流群</p>
+              <p>{{ contact.qq ? 'QQ群: ' + contact.qq : '扫码加入我们的交流群' }}</p>
             </div>
-            <div class="join-way">
+            <a :href="contact.formUrl || '#'" target="_blank" class="join-way clickable" :class="{ disabled: !contact.formUrl }">
               <div class="join-icon">📝</div>
               <h4>填写表单</h4>
               <p>在线申请加入社团</p>
-            </div>
+            </a>
           </div>
-          <button class="btn btn-primary">立即申请加入</button>
+          <a :href="contact.formUrl || 'mailto:' + contact.email" :target="contact.formUrl ? '_blank' : '_self'" class="btn btn-primary">立即申请加入</a>
         </div>
       </div>
     </section>
+
+    <!-- QR Code Modal -->
+    <div v-if="showQrModal" class="modal-overlay" @click="showQrModal = false">
+      <div class="modal-content" @click.stop>
+        <button class="modal-close" @click="showQrModal = false">✕</button>
+        <h3>加入我们的交流群</h3>
+        <div class="qr-info">
+          <div v-if="contact.qq" class="contact-item">
+            <span class="contact-label">QQ群:</span>
+            <span class="contact-value">{{ contact.qq }}</span>
+          </div>
+          <div v-if="contact.wechat" class="contact-item">
+            <span class="contact-label">微信公众号:</span>
+            <span class="contact-value">{{ contact.wechat }}</span>
+          </div>
+          <div v-if="contact.github" class="contact-item">
+            <span class="contact-label">GitHub:</span>
+            <a :href="contact.github" target="_blank" class="contact-link">{{ contact.github }}</a>
+          </div>
+          <p v-if="!contact.qq && !contact.wechat && !contact.github" class="no-contact">
+            暂无群组信息，请联系邮箱: {{ contact.email }}
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -536,6 +572,107 @@ onMounted(async () => {
 
 .join-way p {
   color: var(--text-secondary);
+}
+
+.join-way.clickable {
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+
+.join-way.clickable:hover {
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.join-way.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.join-content .btn {
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg-primary);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+.modal-content h3 {
+  margin-bottom: 24px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.qr-info {
+  text-align: center;
+}
+
+.contact-item {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.contact-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-right: 8px;
+}
+
+.contact-value {
+  color: var(--text-secondary);
+}
+
+.contact-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+}
+
+.no-contact {
+  color: var(--text-secondary);
+  padding: 20px;
 }
 
 /* 响应式 */

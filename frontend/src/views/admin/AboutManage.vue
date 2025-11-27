@@ -122,6 +122,13 @@
             <input v-model="contact.qq" placeholder="QQ群号" />
           </div>
         </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>申请表单链接</label>
+            <input v-model="contact.formUrl" placeholder="https://forms.example.com/apply" />
+            <small class="help-text">用于"填写表单"和"立即申请加入"按钮的跳转链接</small>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -154,7 +161,7 @@ const timeline = ref<any[]>([])
 const values = ref<any[]>([])
 const stats = ref<any[]>([])
 const mission = ref({ title: '', content: '' })
-const contact = ref({ email: '', github: '', wechat: '', qq: '' })
+const contact = ref({ email: '', github: '', wechat: '', qq: '', formUrl: '' })
 
 // 用于处理技能输入
 const skillsInput = ref<string[]>([])
@@ -519,6 +526,16 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.help-text {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 4px;
 }
 
 /* 保存按钮 */
