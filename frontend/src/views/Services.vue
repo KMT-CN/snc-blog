@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 interface Service {
-  id: number
+  _id?: string
+  id?: number
   name: string
   description: string
   url: string
@@ -10,7 +13,8 @@ interface Service {
   category: string
 }
 
-const services = ref<Service[]>([
+// 默认服务数据
+const defaultServices: Service[] = [
   // 学习平台
   {
     id: 1,
@@ -36,14 +40,6 @@ const services = ref<Service[]>([
     icon: '📖',
     category: '学习平台'
   },
-  {
-    id: 4,
-    name: '雨课堂',
-    description: '智慧教学工具平台',
-    url: 'https://yuketang.cn',
-    icon: '☁️',
-    category: '学习平台'
-  },
   // 校园服务
   {
     id: 5,
@@ -61,22 +57,6 @@ const services = ref<Service[]>([
     icon: '✉️',
     category: '校园服务'
   },
-  {
-    id: 7,
-    name: '校园卡服务',
-    description: '校园卡查询、充值',
-    url: 'https://card.example.edu',
-    icon: '💳',
-    category: '校园服务'
-  },
-  {
-    id: 8,
-    name: '正版软件',
-    description: 'Office、WPS等正版软件下载',
-    url: 'https://software.example.edu',
-    icon: '💿',
-    category: '校园服务'
-  },
   // 开发工具
   {
     id: 9,
@@ -87,14 +67,6 @@ const services = ref<Service[]>([
     category: '开发工具'
   },
   {
-    id: 10,
-    name: 'GitLab',
-    description: '校内Git仓库',
-    url: 'https://gitlab.example.edu',
-    icon: '🦊',
-    category: '开发工具'
-  },
-  {
     id: 11,
     name: 'VS Code',
     description: '轻量级代码编辑器',
@@ -102,31 +74,7 @@ const services = ref<Service[]>([
     icon: '📝',
     category: '开发工具'
   },
-  {
-    id: 12,
-    name: 'Stack Overflow',
-    description: '编程问答社区',
-    url: 'https://stackoverflow.com',
-    icon: '❓',
-    category: '开发工具'
-  },
   // 学习资源
-  {
-    id: 13,
-    name: '课程资料库',
-    description: '各类课程学习资料',
-    url: '#',
-    icon: '📁',
-    category: '学习资源'
-  },
-  {
-    id: 14,
-    name: '在线文档',
-    description: '技术文档和教程',
-    url: '#',
-    icon: '📄',
-    category: '学习资源'
-  },
   {
     id: 15,
     name: 'MDN Web Docs',
@@ -143,7 +91,32 @@ const services = ref<Service[]>([
     icon: '🧩',
     category: '学习资源'
   }
-])
+]
+
+const services = ref<Service[]>([])
+const loading = ref(true)
+
+// 从后端加载服务
+onMounted(async () => {
+  try {
+    const res = await fetch(`${API_BASE}/services?active=true`)
+    if (res.ok) {
+      const data = await res.json()
+      if (data && data.length > 0) {
+        services.value = data
+      } else {
+        services.value = defaultServices
+      }
+    } else {
+      services.value = defaultServices
+    }
+  } catch (error) {
+    console.error('加载服务失败:', error)
+    services.value = defaultServices
+  } finally {
+    loading.value = false
+  }
+})
 
 const categories = computed(() => {
   const cats = new Set(services.value.map(s => s.category))

@@ -34,6 +34,29 @@ async def get_services(
     return services
 
 
+@router.get("/{service_id}", response_model=ServiceResponse)
+async def get_service(service_id: str):
+    """获取单个服务"""
+    db = get_database()
+    
+    if not ObjectId.is_valid(service_id):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="无效的服务ID"
+        )
+    
+    service = await db.services.find_one({"_id": ObjectId(service_id)})
+    
+    if not service:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="服务不存在"
+        )
+    
+    service["_id"] = str(service["_id"])
+    return service
+
+
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_service(service: ServiceCreate, current_user: dict = Depends(get_current_user)):
     """创建服务（需要管理员权限）"""

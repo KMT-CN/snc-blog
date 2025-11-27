@@ -17,6 +17,11 @@ import AdminLayout from './views/admin/AdminLayout.vue'
 import Dashboard from './views/admin/Dashboard.vue'
 import BlogManage from './views/admin/BlogManage.vue'
 import BlogEditor from './views/admin/BlogEditor.vue'
+import ServiceManage from './views/admin/ServiceManage.vue'
+import ServiceEditor from './views/admin/ServiceEditor.vue'
+import EventManage from './views/admin/EventManage.vue'
+import EventEditor from './views/admin/EventEditor.vue'
+import SettingsManage from './views/admin/SettingsManage.vue'
 
 // 路由守卫
 const requireAuth = (_to: any, _from: any, next: any) => {
@@ -50,10 +55,13 @@ const router = createRouter({
         { path: 'blogs', name: 'BlogManage', component: BlogManage },
         { path: 'blogs/new', name: 'BlogNew', component: BlogEditor },
         { path: 'blogs/edit/:id', name: 'BlogEdit', component: BlogEditor },
-        // 简化版本：服务和活动管理使用相同的管理界面模式
-        { path: 'services', name: 'ServiceManage', component: BlogManage },
-        { path: 'events', name: 'EventManage', component: BlogManage },
-        { path: 'settings', name: 'Settings', component: Dashboard }
+        { path: 'services', name: 'ServiceManage', component: ServiceManage },
+        { path: 'services/new', name: 'ServiceNew', component: ServiceEditor },
+        { path: 'services/edit/:id', name: 'ServiceEdit', component: ServiceEditor },
+        { path: 'events', name: 'EventManage', component: EventManage },
+        { path: 'events/new', name: 'EventNew', component: EventEditor },
+        { path: 'events/edit/:id', name: 'EventEdit', component: EventEditor },
+        { path: 'settings', name: 'Settings', component: SettingsManage }
       ]
     }
   ],

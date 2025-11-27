@@ -1,23 +1,30 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 interface Post {
-  id: number
+  _id?: string
+  id?: number
   title: string
   excerpt: string
   content: string
   author: string
   date: string
-  readTime: string
+  read_time?: string
+  readTime?: string
   category: string
   tags: string[]
   cover?: string
 }
 
-const posts = ref<Post[]>([
+const posts = ref<Post[]>([])
+const loading = ref(true)
+
+// 默认静态数据（作为后备）
+const defaultPosts: Post[] = [
   {
     id: 1,
     title: 'Vue 3 组合式 API 深度解析',
@@ -84,7 +91,29 @@ const posts = ref<Post[]>([
     category: '开发工具',
     tags: ['Git', '版本控制', '团队协作']
   }
-])
+]
+
+// 加载文章数据
+onMounted(async () => {
+  try {
+    const res = await fetch(`${API_BASE}/blogs?published=true`)
+    if (res.ok) {
+      const data = await res.json()
+      if (data && data.length > 0) {
+        posts.value = data
+      } else {
+        posts.value = defaultPosts
+      }
+    } else {
+      posts.value = defaultPosts
+    }
+  } catch (error) {
+    console.error('加载文章失败:', error)
+    posts.value = defaultPosts
+  } finally {
+    loading.value = false
+  }
+})
 
 const categories = computed(() => {
   const cats = new Set(posts.value.map(p => p.category))
@@ -115,7 +144,18 @@ const filteredPosts = computed(() => {
   return result
 })
 
-const navigateToPost = (id: number) => {
+// 获取文章的阅读时间（兼容两种字段名）
+const getReadTime = (post: Post) => {
+  return post.read_time || post.readTime || '5 分钟'
+}
+
+// 获取文章ID（兼容 _id 和 id）
+const getPostId = (post: Post) => {
+  return post._id || post.id
+}
+
+const navigateToPost = (post: Post) => {
+  const id = getPostId(post)
   router.push(`/blog/${id}`)
 }
 </script>
@@ -161,12 +201,16 @@ const navigateToPost = (id: number) => {
     <!-- Posts List -->
     <section class="posts-content">
       <div class="container">
-        <div v-if="filteredPosts.length > 0" class="posts-grid">
+        <div v-if="loading" class="loading-state">
+          <div class="loading-icon">⏳</div>
+          <p>加载中...</p>
+        </div>
+        <div v-else-if="filteredPosts.length > 0" class="posts-grid">
           <article
             v-for="post in filteredPosts"
-            :key="post.id"
+            :key="getPostId(post)"
             class="post-card card"
-            @click="navigateToPost(post.id)"
+            @click="navigateToPost(post)"
           >
             <div class="post-category">{{ post.category }}</div>
             <h2 class="post-title">{{ post.title }}</h2>
@@ -183,7 +227,7 @@ const navigateToPost = (id: number) => {
               </span>
               <span class="meta-item">
                 <span class="icon">⏱️</span>
-                {{ post.readTime }}
+                {{ getReadTime(post) }}
               </span>
             </div>
 
@@ -397,6 +441,23 @@ const navigateToPost = (id: number) => {
 .post-card:hover .read-more {
   opacity: 1;
   transform: translateX(0);
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.loading-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* Empty State */

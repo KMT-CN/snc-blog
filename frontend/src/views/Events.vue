@@ -1,20 +1,26 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 interface Event {
-  id: number
+  _id?: string
+  id?: number
   title: string
   date: string
-  time: string
+  time?: string
   location: string
-  status: 'upcoming' | 'finished'
+  status: 'upcoming' | 'ongoing' | 'completed' | 'finished'
   description: string
   speaker?: string
-  tags: string[]
+  organizer?: string
+  tags?: string[]
+  category?: string
   image?: string
 }
 
-const events = ref<Event[]>([
+// 默认活动数据
+const defaultEvents: Event[] = [
   {
     id: 1,
     title: 'Web 开发技术分享会',
@@ -22,7 +28,7 @@ const events = ref<Event[]>([
     time: '19:00-21:00',
     location: '教学楼 A301',
     status: 'upcoming',
-    description: '深入探讨现代Web开发技术栈，包括Vue 3、React、TypeScript等前端技术，以及Node.js后端开发实践。本次分享会将由经验丰富的开发者带来实战经验分享。',
+    description: '深入探讨现代Web开发技术栈，包括Vue 3、React、TypeScript等前端技术。',
     speaker: '张三 - 前端工程师',
     tags: ['Web开发', '前端', 'JavaScript']
   },
@@ -33,44 +39,51 @@ const events = ref<Event[]>([
     time: '14:00-17:00',
     location: '实验室 B205',
     status: 'finished',
-    description: 'Linux服务器配置、维护与故障排查实战。涵盖系统安装、用户管理、权限配置、网络设置、服务管理等核心内容，帮助大家掌握Linux运维的基本技能。',
+    description: 'Linux服务器配置、维护与故障排查实战。',
     speaker: '李四 - 系统运维专家',
     tags: ['Linux', '运维', '服务器']
   },
   {
     id: 3,
-    title: '开源项目贡献指南',
-    date: '2025-10-28',
-    time: '19:30-21:00',
-    location: '线上直播',
-    status: 'finished',
-    description: '如何参与开源项目，从提交第一个PR开始。本次讲座将介绍Git/GitHub的基本使用、如何寻找适合的开源项目、贡献流程和注意事项等。',
-    speaker: '王五 - 开源社区贡献者',
-    tags: ['开源', 'Git', 'GitHub']
-  },
-  {
-    id: 4,
     title: 'Python 数据分析入门',
     date: '2025-11-22',
     time: '15:00-17:30',
     location: '计算机楼 C102',
     status: 'upcoming',
-    description: '使用Python进行数据分析的基础知识，包括NumPy、Pandas、Matplotlib等常用库的使用，以及实际案例分析。',
+    description: '使用Python进行数据分析的基础知识。',
     speaker: '赵六 - 数据科学家',
     tags: ['Python', '数据分析', 'AI']
-  },
-  {
-    id: 5,
-    title: '网络安全与隐私保护',
-    date: '2025-10-15',
-    time: '18:00-20:00',
-    location: '教学楼 A201',
-    status: 'finished',
-    description: '网络安全基础知识、常见攻击手段及防护措施，个人隐私保护的最佳实践。帮助大家建立安全意识，保护个人信息安全。',
-    speaker: '孙七 - 安全工程师',
-    tags: ['安全', '隐私', '网络']
   }
-])
+]
+
+const events = ref<Event[]>([])
+const loading = ref(true)
+
+// 从后端加载活动
+onMounted(async () => {
+  try {
+    const res = await fetch(`${API_BASE}/events?published=true`)
+    if (res.ok) {
+      const data = await res.json()
+      if (data && data.length > 0) {
+        // 转换状态字段
+        events.value = data.map((e: Event) => ({
+          ...e,
+          status: e.status === 'completed' ? 'finished' : e.status
+        }))
+      } else {
+        events.value = defaultEvents
+      }
+    } else {
+      events.value = defaultEvents
+    }
+  } catch (error) {
+    console.error('加载活动失败:', error)
+    events.value = defaultEvents
+  } finally {
+    loading.value = false
+  }
+})
 
 const selectedFilter = ref<'all' | 'upcoming' | 'finished'>('all')
 
@@ -78,15 +91,18 @@ const filteredEvents = computed(() => {
   if (selectedFilter.value === 'all') {
     return events.value
   }
-  return events.value.filter(event => event.status === selectedFilter.value)
+  if (selectedFilter.value === 'finished') {
+    return events.value.filter(event => event.status === 'finished' || event.status === 'completed')
+  }
+  return events.value.filter(event => event.status === selectedFilter.value || event.status === 'ongoing')
 })
 
 const upcomingCount = computed(() => 
-  events.value.filter(e => e.status === 'upcoming').length
+  events.value.filter(e => e.status === 'upcoming' || e.status === 'ongoing').length
 )
 
 const finishedCount = computed(() => 
-  events.value.filter(e => e.status === 'finished').length
+  events.value.filter(e => e.status === 'finished' || e.status === 'completed').length
 )
 </script>
 

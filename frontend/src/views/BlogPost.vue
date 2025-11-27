@@ -5,6 +5,7 @@ import { marked } from 'marked'
 
 const route = useRoute()
 const router = useRouter()
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 // 配置 marked 选项
 marked.setOptions({
@@ -13,18 +14,20 @@ marked.setOptions({
 })
 
 interface Post {
-  id: number
+  _id?: string
+  id?: number
   title: string
   content: string
   author: string
   date: string
-  readTime: string
+  read_time?: string
+  readTime?: string
   category: string
   tags: string[]
 }
 
-// 模拟文章数据
-const posts: Record<number, Post> = {
+// 默认静态数据（作为后备）
+const defaultPosts: Record<string | number, Post> = {
   1: {
     id: 1,
     title: 'Vue 3 组合式 API 深度解析',
@@ -73,77 +76,9 @@ export default {
 - **computed**: 计算属性
 - **watch**: 侦听器
 
-### 3. 生命周期钩子
-
-\`\`\`javascript
-import { onMounted, onUnmounted } from 'vue'
-
-setup() {
-  onMounted(() => {
-    console.log('组件已挂载')
-  })
-  
-  onUnmounted(() => {
-    console.log('组件将卸载')
-  })
-}
-\`\`\`
-
-## 最佳实践
-
-### 1. 组合函数（Composables）
-
-将可复用的逻辑提取到组合函数中：
-
-\`\`\`javascript
-// useCounter.js
-import { ref } from 'vue'
-
-export function useCounter(initialValue = 0) {
-  const count = ref(initialValue)
-  
-  function increment() {
-    count.value++
-  }
-  
-  function decrement() {
-    count.value--
-  }
-  
-  return {
-    count,
-    increment,
-    decrement
-  }
-}
-\`\`\`
-
-### 2. TypeScript 支持
-
-组合式 API 提供了更好的 TypeScript 类型推断：
-
-\`\`\`typescript
-import { ref, Ref } from 'vue'
-
-interface User {
-  name: string
-  age: number
-}
-
-const user: Ref<User> = ref({
-  name: 'John',
-  age: 30
-})
-\`\`\`
-
 ## 总结
 
-组合式 API 为 Vue 3 带来了更强大和灵活的开发体验。它不是替代选项式 API，而是提供了一种新的选择。根据项目需求和团队习惯，选择最适合的方式。
-
-## 参考资料
-
-- [Vue 3 官方文档](https://v3.vuejs.org/)
-- [Composition API RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0013-composition-api.md)
+组合式 API 为 Vue 3 带来了更强大和灵活的开发体验。
     `,
     author: '张三',
     date: '2025-11-10',
@@ -163,87 +98,13 @@ const user: Ref<User> = ref({
 
 ## 系统配置优化
 
-### 1. 内核参数调优
+### 内核参数调优
 
-编辑 \`/etc/sysctl.conf\`：
-
-\`\`\`bash
-# 增加 TCP 连接数
-net.ipv4.tcp_max_syn_backlog = 8192
-net.core.somaxconn = 8192
-
-# 启用 TCP Fast Open
-net.ipv4.tcp_fastopen = 3
-
-# 优化 TCP 缓冲区
-net.core.rmem_max = 16777216
-net.core.wmem_max = 16777216
-\`\`\`
-
-应用配置：
-\`\`\`bash
-sysctl -p
-\`\`\`
-
-### 2. 文件描述符限制
-
-编辑 \`/etc/security/limits.conf\`：
-
-\`\`\`
-* soft nofile 65535
-* hard nofile 65535
-\`\`\`
-
-## 性能监控
-
-### 常用监控工具
-
-- **top/htop**: 实时系统监控
-- **iostat**: I/O 统计
-- **vmstat**: 虚拟内存统计
-- **netstat**: 网络连接监控
-
-### 使用示例
-
-\`\`\`bash
-# 查看 CPU 使用率
-top -bn1 | head -n 5
-
-# 查看磁盘 I/O
-iostat -x 1
-
-# 查看网络连接
-netstat -tunlp
-\`\`\`
-
-## Web 服务器优化
-
-### Nginx 优化
-
-\`\`\`nginx
-worker_processes auto;
-worker_connections 4096;
-
-keepalive_timeout 65;
-keepalive_requests 100;
-
-gzip on;
-gzip_comp_level 6;
-gzip_types text/plain text/css application/json;
-\`\`\`
-
-## 数据库优化
-
-### MySQL 优化建议
-
-1. 合理配置缓冲池大小
-2. 使用索引优化查询
-3. 定期分析和优化表
-4. 启用查询缓存（适用于读多写少的场景）
+编辑 \`/etc/sysctl.conf\` 来优化系统参数。
 
 ## 总结
 
-服务器性能优化是一个持续的过程，需要根据实际业务场景进行针对性调整。定期监控和分析是发现性能瓶颈的关键。
+服务器性能优化是一个持续的过程，需要根据实际业务场景进行针对性调整。
     `,
     author: '李四',
     date: '2025-11-08',
@@ -262,23 +123,67 @@ const renderedContent = computed(() => {
   return marked(post.value.content) as string
 })
 
-onMounted(() => {
-  const postId = Number(route.params.id)
-  setTimeout(() => {
-    post.value = posts[postId] || null
+// 获取阅读时间（兼容两种字段名）
+const getReadTime = computed(() => {
+  if (!post.value) return ''
+  return post.value.read_time || post.value.readTime || '5 分钟'
+})
+
+onMounted(async () => {
+  const postId = route.params.id as string
+  
+  try {
+    // 尝试从后端获取
+    const res = await fetch(`${API_BASE}/blogs/${postId}`)
+    if (res.ok) {
+      const data = await res.json()
+      post.value = data
+    } else {
+      // 后端没找到，尝试使用静态数据
+      post.value = defaultPosts[postId] || defaultPosts[Number(postId)] || null
+    }
+  } catch (error) {
+    console.error('加载文章失败:', error)
+    // 出错时尝试使用静态数据
+    post.value = defaultPosts[postId] || defaultPosts[Number(postId)] || null
+  } finally {
     loading.value = false
-  }, 300)
+  }
 })
 
 const goBack = () => {
   router.push('/blog')
 }
 
-const relatedPosts = [
-  { id: 3, title: 'Docker 容器化部署实践', category: '运维技术' },
-  { id: 4, title: 'TypeScript 类型体操技巧', category: '前端开发' },
-  { id: 5, title: 'Python 异步编程入门', category: '后端开发' }
-]
+const relatedPosts = ref<Array<{_id?: string; id?: number; title: string; category: string}>>([])
+
+// 加载相关文章
+onMounted(async () => {
+  try {
+    const res = await fetch(`${API_BASE}/blogs?published=true`)
+    if (res.ok) {
+      const blogs = await res.json()
+      relatedPosts.value = blogs.slice(0, 3).map((b: any) => ({
+        _id: b._id,
+        id: b.id,
+        title: b.title,
+        category: b.category
+      }))
+    }
+  } catch (error) {
+    // 使用默认相关文章
+    relatedPosts.value = [
+      { id: 3, title: 'Docker 容器化部署实践', category: '运维技术' },
+      { id: 4, title: 'TypeScript 类型体操技巧', category: '前端开发' },
+      { id: 5, title: 'Python 异步编程入门', category: '后端开发' }
+    ]
+  }
+})
+
+const navigateToPost = (postItem: any) => {
+  const id = postItem._id || postItem.id
+  router.push(`/blog/${id}`)
+}
 </script>
 
 <template>
@@ -317,7 +222,7 @@ const relatedPosts = [
             </span>
             <span class="meta-item">
               <span class="icon">⏱️</span>
-              {{ post.readTime }}
+              {{ getReadTime }}
             </span>
           </div>
 
@@ -347,16 +252,17 @@ const relatedPosts = [
           <div class="related-posts">
             <h3>相关文章</h3>
             <div class="related-list">
-              <router-link
+              <a
                 v-for="related in relatedPosts"
-                :key="related.id"
-                :to="`/blog/${related.id}`"
+                :key="related._id || related.id"
+                @click.prevent="navigateToPost(related)"
                 class="related-item"
+                href="#"
               >
                 <span class="related-category">{{ related.category }}</span>
                 <span class="related-title">{{ related.title }}</span>
                 <span class="related-arrow">→</span>
-              </router-link>
+              </a>
             </div>
           </div>
         </footer>

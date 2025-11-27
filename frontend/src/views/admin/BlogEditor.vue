@@ -27,7 +27,7 @@
         </div>
         <div class="form-group">
           <label>阅读时间</label>
-          <input v-model="form.readTime" type="text" placeholder="5 分钟" />
+          <input v-model="form.read_time" type="text" placeholder="5 分钟" />
         </div>
       </div>
 
@@ -95,7 +95,7 @@ const form = ref({
   title: '',
   author: '',
   category: '',
-  readTime: '5 分钟',
+  read_time: '5 分钟',
   excerpt: '',
   content: '',
   published: true,
@@ -124,7 +124,12 @@ const loadBlog = async () => {
   try {
     const res = await fetch(`${API_BASE}/blogs/${route.params.id}`)
     const blog = await res.json()
-    form.value = { ...blog, tags: blog.tags || [] }
+    // 兼容 read_time 和 readTime 字段
+    form.value = { 
+      ...blog, 
+      read_time: blog.read_time || blog.readTime || '5 分钟',
+      tags: blog.tags || [] 
+    }
   } catch (error) {
     console.error('加载文章失败:', error)
   }
