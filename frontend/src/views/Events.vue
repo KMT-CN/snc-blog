@@ -159,8 +159,8 @@ const finishedCount = computed(() =>
                 {{ event.status === 'upcoming' ? '即将举办' : '已结束' }}
               </div>
               <div class="event-date-box">
-                <div class="month">{{ event.date.split('-')[1] }}月</div>
-                <div class="day">{{ event.date.split('-')[2] }}</div>
+                <div class="month">{{ new Date(event.date).getMonth() + 1 }}月</div>
+                <div class="day">{{ new Date(event.date).getDate() }}</div>
               </div>
             </div>
 
