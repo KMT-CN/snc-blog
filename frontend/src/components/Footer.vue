@@ -5,14 +5,22 @@ const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 const currentYear = new Date().getFullYear()
 
+// 社交链接类型
+interface SocialLink {
+  name: string
+  icon: string
+  url: string
+  title?: string
+}
+
 // 默认社交链接
-const defaultSocialLinks = [
+const defaultSocialLinks: SocialLink[] = [
   { name: 'GitHub', icon: '💻', url: 'https://github.com' },
   { name: 'Email', icon: '📧', url: 'mailto:contact@snc.edu.cn' },
   { name: 'QQ', icon: '💬', url: '' }
 ]
 
-const socialLinks = ref(defaultSocialLinks)
+const socialLinks = ref<SocialLink[]>(defaultSocialLinks)
 
 // 默认联系信息
 const contactInfo = ref({
@@ -62,7 +70,7 @@ const loadSettings = async () => {
       }
       
       // 更新社交链接
-      const newSocialLinks = []
+      const newSocialLinks: SocialLink[] = []
       if (settings.github) {
         newSocialLinks.push({ name: 'GitHub', icon: '💻', url: settings.github })
       }
