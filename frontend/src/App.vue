@@ -1,12 +1,24 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 import Navigation from './components/Navigation.vue'
 import Footer from './components/Footer.vue'
 import ParticleBackground from './components/ParticleBackground.vue'
+import LoadingScreen from './components/LoadingScreen.vue'
+
+const isLoading = ref(true)
+
+onMounted(() => {
+  // 模拟加载过程，实际项目中可以根据资源加载情况控制
+  setTimeout(() => {
+    isLoading.value = false
+  }, 2000)
+})
 </script>
 
 <template>
   <div id="app">
+    <LoadingScreen :loading="isLoading" />
     <ParticleBackground />
     <Navigation />
     <main>
