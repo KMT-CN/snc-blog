@@ -1,5 +1,36 @@
 <script setup lang="ts">
-const teamMembers = [
+import { ref, onMounted } from 'vue'
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
+
+interface TeamMember {
+  name: string
+  role: string
+  avatar: string
+  description: string
+  skills: string[]
+}
+
+interface TimelineItem {
+  year: string
+  title: string
+  description: string
+}
+
+interface ValueItem {
+  icon: string
+  title: string
+  description: string
+}
+
+interface StatItem {
+  label: string
+  value: string
+  icon: string
+}
+
+// 默认数据
+const defaultTeamMembers: TeamMember[] = [
   {
     name: '张三',
     role: '技术负责人',
@@ -30,63 +61,49 @@ const teamMembers = [
   }
 ]
 
-const timeline = [
-  {
-    year: '2020',
-    title: '社团成立',
-    description: '学生网络中心正式成立，开始为校园提供网络服务'
-  },
-  {
-    year: '2021',
-    title: '服务扩展',
-    description: '推出多项新服务，用户数突破5000+'
-  },
-  {
-    year: '2022',
-    title: '技术创新',
-    description: '开源多个项目，举办首届技术分享会'
-  },
-  {
-    year: '2023',
-    title: '影响力提升',
-    description: '与多个高校技术社团建立合作关系'
-  },
-  {
-    year: '2024',
-    title: '持续发展',
-    description: '服务用户超过10000+，技术团队不断壮大'
-  }
+const defaultTimeline: TimelineItem[] = [
+  { year: '2020', title: '社团成立', description: '学生网络中心正式成立，开始为校园提供网络服务' },
+  { year: '2021', title: '服务扩展', description: '推出多项新服务，用户数突破5000+' },
+  { year: '2022', title: '技术创新', description: '开源多个项目，举办首届技术分享会' },
+  { year: '2023', title: '影响力提升', description: '与多个高校技术社团建立合作关系' },
+  { year: '2024', title: '持续发展', description: '服务用户超过10000+，技术团队不断壮大' }
 ]
 
-const values = [
-  {
-    icon: '🎯',
-    title: '追求卓越',
-    description: '不断提升技术能力，为用户提供最优质的服务'
-  },
-  {
-    icon: '🤝',
-    title: '团队协作',
-    description: '相互学习，共同成长，打造高效团队'
-  },
-  {
-    icon: '💡',
-    title: '创新精神',
-    description: '勇于尝试新技术，推动校园信息化建设'
-  },
-  {
-    icon: '🌍',
-    title: '开源分享',
-    description: '积极参与开源社区，分享技术经验'
-  }
+const defaultValues: ValueItem[] = [
+  { icon: '🎯', title: '追求卓越', description: '不断提升技术能力，为用户提供最优质的服务' },
+  { icon: '🤝', title: '团队协作', description: '相互学习，共同成长，打造高效团队' },
+  { icon: '💡', title: '创新精神', description: '勇于尝试新技术，推动校园信息化建设' },
+  { icon: '🌍', title: '开源分享', description: '积极参与开源社区，分享技术经验' }
 ]
 
-const stats = [
+const defaultStats: StatItem[] = [
   { label: '服务用户', value: '10,000+', icon: '👥' },
   { label: '技术文章', value: '200+', icon: '📝' },
   { label: '举办活动', value: '50+', icon: '🎪' },
   { label: '开源项目', value: '30+', icon: '💻' }
 ]
+
+const teamMembers = ref<TeamMember[]>(defaultTeamMembers)
+const timeline = ref<TimelineItem[]>(defaultTimeline)
+const values = ref<ValueItem[]>(defaultValues)
+const stats = ref<StatItem[]>(defaultStats)
+const mission = ref({ title: '', content: '' })
+
+onMounted(async () => {
+  try {
+    const res = await fetch(`${API_BASE}/about`)
+    if (res.ok) {
+      const data = await res.json()
+      if (data.team_members?.length) teamMembers.value = data.team_members
+      if (data.timeline?.length) timeline.value = data.timeline
+      if (data.values?.length) values.value = data.values
+      if (data.stats?.length) stats.value = data.stats
+      if (data.mission) mission.value = data.mission
+    }
+  } catch (error) {
+    console.error('加载关于我们数据失败:', error)
+  }
+})
 </script>
 
 <template>

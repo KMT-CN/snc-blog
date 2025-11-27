@@ -6,7 +6,7 @@ import os
 
 from .core.config import settings
 from .core.database import connect_to_mongo, close_mongo_connection
-from .routers import auth, blog, service, event, settings as settings_router
+from .routers import auth, blog, service, event, settings as settings_router, about
 
 # 创建 FastAPI 应用
 app = FastAPI(
@@ -57,6 +57,7 @@ app.include_router(blog.router, prefix="/api/blogs", tags=["博客"])
 app.include_router(service.router, prefix="/api/services", tags=["服务"])
 app.include_router(event.router, prefix="/api/events", tags=["活动"])
 app.include_router(settings_router.router, prefix="/api/settings", tags=["设置"])
+app.include_router(about.router, prefix="/api/about", tags=["关于我们"])
 
 
 # 健康检查

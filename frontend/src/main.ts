@@ -22,6 +22,7 @@ import ServiceEditor from './views/admin/ServiceEditor.vue'
 import EventManage from './views/admin/EventManage.vue'
 import EventEditor from './views/admin/EventEditor.vue'
 import SettingsManage from './views/admin/SettingsManage.vue'
+import AboutManage from './views/admin/AboutManage.vue'
 
 // 路由守卫
 const requireAuth = (_to: any, _from: any, next: any) => {
@@ -61,6 +62,7 @@ const router = createRouter({
         { path: 'events', name: 'EventManage', component: EventManage },
         { path: 'events/new', name: 'EventNew', component: EventEditor },
         { path: 'events/edit/:id', name: 'EventEdit', component: EventEditor },
+        { path: 'about', name: 'AboutManage', component: AboutManage },
         { path: 'settings', name: 'Settings', component: SettingsManage }
       ]
     }

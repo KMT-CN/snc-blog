@@ -22,6 +22,10 @@
           <span class="icon">📅</span>
           <span>活动管理</span>
         </router-link>
+        <router-link to="/admin/about" class="nav-item">
+          <span class="icon">👥</span>
+          <span>关于我们</span>
+        </router-link>
         <router-link to="/admin/settings" class="nav-item">
           <span class="icon">⚙️</span>
           <span>系统设置</span>
