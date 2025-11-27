@@ -9,15 +9,34 @@
         <div class="settings-form">
           <div class="form-group">
             <label>网站名称</label>
-            <input v-model="settings.siteName" type="text" placeholder="SNC Blog" />
+            <input v-model="settings.siteName" type="text" placeholder="学生网络中心" />
           </div>
           <div class="form-group">
             <label>网站描述</label>
             <textarea v-model="settings.siteDescription" rows="3" placeholder="网站描述..."></textarea>
           </div>
+        </div>
+      </div>
+
+      <!-- 联系信息 -->
+      <div class="settings-section">
+        <h2>联系信息</h2>
+        <div class="settings-form">
           <div class="form-group">
             <label>联系邮箱</label>
             <input v-model="settings.contactEmail" type="email" placeholder="admin@example.com" />
+          </div>
+          <div class="form-group">
+            <label>地址</label>
+            <input v-model="settings.address" type="text" placeholder="XX大学 信息中心" />
+          </div>
+          <div class="form-group">
+            <label>工作时间</label>
+            <input v-model="settings.workTime" type="text" placeholder="周一至周五 9:00-17:00" />
+          </div>
+          <div class="form-group">
+            <label>联系电话</label>
+            <input v-model="settings.phone" type="text" placeholder="010-12345678" />
           </div>
         </div>
       </div>
@@ -81,9 +100,12 @@ const saving = ref(false)
 const changingPassword = ref(false)
 
 const settings = ref({
-  siteName: 'SNC Blog',
+  siteName: '学生网络中心',
   siteDescription: '',
   contactEmail: '',
+  address: '',
+  workTime: '',
+  phone: '',
   github: '',
   wechat: '',
   qq: ''
@@ -101,13 +123,16 @@ onMounted(async () => {
 
 const loadSettings = async () => {
   try {
-    const res = await fetch(`${API_BASE}/settings`)
+    const res = await fetch(`${API_BASE}/settings/`)
     const data = await res.json()
     
     // 合并已有设置
     if (data.siteName) settings.value.siteName = data.siteName
     if (data.siteDescription) settings.value.siteDescription = data.siteDescription
     if (data.contactEmail) settings.value.contactEmail = data.contactEmail
+    if (data.address) settings.value.address = data.address
+    if (data.workTime) settings.value.workTime = data.workTime
+    if (data.phone) settings.value.phone = data.phone
     if (data.github) settings.value.github = data.github
     if (data.wechat) settings.value.wechat = data.wechat
     if (data.qq) settings.value.qq = data.qq
@@ -124,7 +149,7 @@ const saveSettings = async () => {
     
     // 保存每个设置
     for (const [key, value] of Object.entries(settings.value)) {
-      await fetch(`${API_BASE}/settings`, {
+      await fetch(`${API_BASE}/settings/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

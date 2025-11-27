@@ -1,11 +1,31 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
+
 const currentYear = new Date().getFullYear()
 
-const socialLinks = [
+// 默认社交链接
+const defaultSocialLinks = [
   { name: 'GitHub', icon: '💻', url: 'https://github.com' },
   { name: 'Email', icon: '📧', url: 'mailto:contact@snc.edu.cn' },
-  { name: 'Telegram', icon: '📱', url: 'https://t.me' }
+  { name: 'QQ', icon: '💬', url: '' }
 ]
+
+const socialLinks = ref(defaultSocialLinks)
+
+// 默认联系信息
+const contactInfo = ref({
+  address: '学校地址',
+  email: 'contact@snc.edu.cn',
+  workTime: '周一至周五 9:00-17:00'
+})
+
+// 网站信息
+const siteInfo = ref({
+  name: '学生网络中心',
+  description: '致力于为学校师生提供优质的网络服务和技术支持，推动校园信息化建设。'
+})
 
 const quickLinks = [
   { name: '首页', path: '/' },
@@ -14,6 +34,61 @@ const quickLinks = [
   { name: '活动', path: '/events' },
   { name: '关于我们', path: '/about' }
 ]
+
+// 加载设置
+const loadSettings = async () => {
+  try {
+    const response = await fetch(`${API_BASE}/settings/`)
+    if (response.ok) {
+      const settings = await response.json()
+      
+      // 更新网站信息
+      if (settings.siteName) {
+        siteInfo.value.name = settings.siteName
+      }
+      if (settings.siteDescription) {
+        siteInfo.value.description = settings.siteDescription
+      }
+      
+      // 更新联系信息
+      if (settings.contactEmail) {
+        contactInfo.value.email = settings.contactEmail
+      }
+      if (settings.address) {
+        contactInfo.value.address = settings.address
+      }
+      if (settings.workTime) {
+        contactInfo.value.workTime = settings.workTime
+      }
+      
+      // 更新社交链接
+      const newSocialLinks = []
+      if (settings.github) {
+        newSocialLinks.push({ name: 'GitHub', icon: '💻', url: settings.github })
+      }
+      if (settings.contactEmail) {
+        newSocialLinks.push({ name: 'Email', icon: '📧', url: `mailto:${settings.contactEmail}` })
+      }
+      if (settings.qq) {
+        newSocialLinks.push({ name: 'QQ群', icon: '💬', url: `https://qm.qq.com/q/${settings.qq}` })
+      }
+      if (settings.wechat) {
+        newSocialLinks.push({ name: '微信', icon: '📱', url: '#', title: settings.wechat })
+      }
+      
+      if (newSocialLinks.length > 0) {
+        socialLinks.value = newSocialLinks
+      }
+    }
+  } catch (error) {
+    console.error('加载设置失败:', error)
+    // 使用默认值
+  }
+}
+
+onMounted(() => {
+  loadSettings()
+})
 </script>
 
 <template>
@@ -37,16 +112,16 @@ const quickLinks = [
         <div class="footer-grid">
           <!-- 关于我们 -->
           <div class="footer-section">
-            <h3>学生网络中心</h3>
+            <h3>{{ siteInfo.name }}</h3>
             <p class="footer-description">
-              致力于为学校师生提供优质的网络服务和技术支持，推动校园信息化建设。
+              {{ siteInfo.description }}
             </p>
             <div class="social-links">
               <a
                 v-for="link in socialLinks"
                 :key="link.name"
                 :href="link.url"
-                :title="link.name"
+                :title="link.title || link.name"
                 class="social-link"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -72,22 +147,22 @@ const quickLinks = [
             <ul class="contact-info">
               <li>
                 <span class="icon">📍</span>
-                <span>学校地址</span>
+                <span>{{ contactInfo.address }}</span>
               </li>
               <li>
                 <span class="icon">📧</span>
-                <span>contact@snc.edu.cn</span>
+                <span>{{ contactInfo.email }}</span>
               </li>
               <li>
                 <span class="icon">⏰</span>
-                <span>周一至周五 9:00-17:00</span>
+                <span>{{ contactInfo.workTime }}</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div class="footer-bottom">
-          <p>&copy; {{ currentYear }} 学生网络中心 (SNC). All rights reserved.</p>
+          <p>&copy; {{ currentYear }} {{ siteInfo.name }} (SNC). All rights reserved.</p>
           <p class="footer-motto">The best team on the campus.</p>
         </div>
       </div>

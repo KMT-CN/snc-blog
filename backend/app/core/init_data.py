@@ -602,12 +602,15 @@ DEMO_ABOUT = {
 
 # 默认设置
 DEMO_SETTINGS = [
-    {"key": "siteName", "value": "SNC Blog", "description": "网站名称"},
-    {"key": "siteDescription", "value": "学生网络中心技术博客", "description": "网站描述"},
+    {"key": "siteName", "value": "学生网络中心", "description": "网站名称"},
+    {"key": "siteDescription", "value": "致力于为学校师生提供优质的网络服务和技术支持，推动校园信息化建设。", "description": "网站描述"},
     {"key": "contactEmail", "value": "contact@snc.example.edu", "description": "联系邮箱"},
+    {"key": "address", "value": "XX大学 信息中心 3楼", "description": "地址"},
+    {"key": "workTime", "value": "周一至周五 9:00-17:00", "description": "工作时间"},
     {"key": "github", "value": "https://github.com/snc-example", "description": "GitHub地址"},
     {"key": "wechat", "value": "SNC_Official", "description": "微信公众号"},
-    {"key": "qq", "value": "123456789", "description": "QQ群号"}
+    {"key": "qq", "value": "123456789", "description": "QQ群号"},
+    {"key": "phone", "value": "010-12345678", "description": "联系电话"}
 ]
 
 
