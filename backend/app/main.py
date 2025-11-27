@@ -9,16 +9,18 @@ from .core.database import connect_to_mongo, close_mongo_connection
 from .routers import auth, blog, service, event, settings as settings_router, about
 
 # 创建 FastAPI 应用
+# redirect_slashes=False 禁用自动斜杠重定向，避免 HTTPS->HTTP 重定向问题
 app = FastAPI(
     title="SNC Blog API",
     description="Backend API for SNC Blog",
-    version="2.0.0"
+    version="2.0.0",
+    redirect_slashes=False
 )
 
 # CORS 配置
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.client_url, "http://localhost:3000"],
+    allow_origins=[settings.client_url, "http://localhost:3000", "https://snc.319.molirain.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

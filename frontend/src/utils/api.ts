@@ -1,4 +1,8 @@
+// API 基础路径 - 使用相对路径，由 nginx/vite 代理处理
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
+
+// 调试：在控制台输出 API 基础路径
+console.log('[API] Base URL:', API_BASE)
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('admin_token')
